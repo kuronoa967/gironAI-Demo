@@ -13,9 +13,6 @@ if "chats" not in st.session_state:
 if "current_chat_id" not in st.session_state:
     st.session_state.current_chat_id = None
 
-chat_titles = [chat["title"] for chat in st.session_state.chats]
-chat_id_map = {chat["title"]: chat["id"] for chat in st.session_state.chats}
-
 with st.sidebar:
     # ① 一番上：新規チャット
     if st.button("＋ 新規チャット", use_container_width=True):
@@ -45,9 +42,6 @@ with st.sidebar:
     # ③ 一番下：アカウントボタン（今は仮）
     if st.button("アカウント", use_container_width=True):
         st.session_state.page = "account"
-
-if selected_chat_title:
-    st.session_state.current_chat_id = chat_id_map[selected_chat_title]
 
 st.header("メインチャット画面")
 
