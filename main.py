@@ -39,7 +39,7 @@ with st.sidebar:
             },
             "nav": {
                 "padding": "0.25rem"
-            }
+            },
             "icon": {
                 "display": "none",
                 "margin-right": "0",
