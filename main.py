@@ -22,8 +22,6 @@ with st.sidebar:
         )
         st.session_state.current_chat_id = new_id
 
-    st.divider()
-
     # ② 真ん中：チャット一覧
     chat_titles = [c["title"] for c in st.session_state.chats]
     chat_id_map = {c["title"]: c["id"] for c in st.session_state.chats}
@@ -36,8 +34,6 @@ with st.sidebar:
 
     if selected_chat:
         st.session_state.current_chat_id = chat_id_map[selected_chat]
-
-    st.divider()
 
     # ③ 一番下：アカウントボタン（今は仮）
     if st.button("アカウント", use_container_width=True):
