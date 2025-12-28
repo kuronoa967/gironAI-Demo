@@ -29,7 +29,7 @@ with st.sidebar:
     selected_chat = option_menu(
         menu_title=None,
         options=chat_titles,
-        icons=["chat"] * len(chat_titles),
+        icons=[None] * len(chat_titles),
     )
 
     if selected_chat:
