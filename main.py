@@ -15,7 +15,7 @@ if "current_chat_id" not in st.session_state:
 
 with st.sidebar:
     # ① 一番上：新規チャット
-    if st.button("＋ 新規チャット", use_container_width=True):
+    if st.button("新規チャット", use_container_width=True):
         new_id = f"chat{len(st.session_state.chats) + 1}"
         st.session_state.chats.append(
             {"id": new_id, "title": "新しいチャット"}
@@ -27,7 +27,7 @@ with st.sidebar:
     chat_id_map = {c["title"]: c["id"] for c in st.session_state.chats}
 
     selected_chat = option_menu(
-        menu_title="None",
+        menu_title=None,
         options=chat_titles,
         icons=["chat"] * len(chat_titles),
     )
