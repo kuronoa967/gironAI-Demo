@@ -17,24 +17,34 @@ chat_titles = [chat["title"] for chat in st.session_state.chats]
 chat_id_map = {chat["title"]: chat["id"] for chat in st.session_state.chats}
 
 with st.sidebar:
-    st.subheader("チャット")
+    # ① 一番上：新規チャット
+    if st.button("＋ 新規チャット", use_container_width=True):
+        new_id = f"chat{len(st.session_state.chats) + 1}"
+        st.session_state.chats.append(
+            {"id": new_id, "title": "新しいチャット"}
+        )
+        st.session_state.current_chat_id = new_id
 
-    selected_chat_title = option_menu(
-        menu_title=None,
+    st.divider()
+
+    # ② 真ん中：チャット一覧
+    chat_titles = [c["title"] for c in st.session_state.chats]
+    chat_id_map = {c["title"]: c["id"] for c in st.session_state.chats}
+
+    selected_chat = option_menu(
+        menu_title="チャット一覧",
         options=chat_titles,
         icons=["chat"] * len(chat_titles),
-        orientation="vertical",
-        styles={
-            "nav-link": {
-                "font-size": "14px",
-                "text-align": "left",
-                "margin": "0px",
-            },
-            "nav-link-selected": {
-                "background-color": "#2E7BF6",
-            },
-        },
     )
+
+    if selected_chat:
+        st.session_state.current_chat_id = chat_id_map[selected_chat]
+
+    st.divider()
+
+    # ③ 一番下：アカウントボタン（今は仮）
+    if st.button("アカウント", use_container_width=True):
+        st.session_state.page = "account"
 
 if selected_chat_title:
     st.session_state.current_chat_id = chat_id_map[selected_chat_title]
@@ -46,15 +56,3 @@ if st.session_state.current_chat_id is None:
 else:
     st.write("選択中のチャットID:")
     st.code(st.session_state.current_chat_id)
-
-with st.sidebar:
-    if st.button("＋ 新規チャット", use_container_width=True):
-        new_id = f"chat{len(st.session_state.chats) + 1}"
-        new_title = "新しいチャット"
-
-        st.session_state.chats.append(
-            {"id": new_id, "title": new_title}
-        )
-        st.session_state.current_chat_id = new_id
-
-    st.divider()
