@@ -1,12 +1,18 @@
-import streamlit as st
+from streamlit_option_menu import option_menu
 
-with st.sidebar:
-    st.title("サイドバー")
-    st.write("上部のコンテンツ")
-    
-    # 残りのスペースをすべて埋めるスペーサー
-    st.space(size="stretch")
-    
-    # スペーサーの後にボタンを置くと、結果的に一番下へ押し出される
-    if st.button("設定"):
-        st.write("設定画面へ")
+selected = option_menu(
+    "メニュー",
+    ["Home", "Profile", "Settings", "About", "More1", "More2", "More3"],
+    styles={
+        "container": {
+            "max-height": "200px",
+            "overflow-y": "auto",
+            "width": "240px",
+            "padding": "0.5rem"
+        },
+        "nav": {
+            "padding": "0.25rem"
+        }
+    },
+    key="my_menu"
+)
