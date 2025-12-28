@@ -30,6 +30,22 @@ with st.sidebar:
         menu_title=None,
         options=chat_titles,
         icons=[None] * len(chat_titles),
+        styles={
+            "container": {
+                "max-height": "200px",
+                "overflow-y": "auto",
+                "width": "240px",
+                "padding": "0.5rem"
+            },
+            "nav": {
+                "padding": "0.25rem"
+            }
+            "icon": {
+                "display": "none",
+                "margin-right": "0",
+                "width": "0",
+            },
+        },
     )
 
     if selected_chat:
