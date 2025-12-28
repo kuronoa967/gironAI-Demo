@@ -2,7 +2,7 @@ import streamlit as st
 
 # サイドバーに通常のコンテンツを配置
 st.sidebar.title("メニュー")
-st.sidebar.write("ここに通常のリンクや設定を配置します。" * 5)
+st.sidebar.write("ここに通常のリンクや設定を配置します。" * 50)
 
 # 下部に固定したいボタン用のコンテナ
 with st.sidebar.container(key="sidebar_bottom"):
