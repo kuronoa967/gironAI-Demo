@@ -27,7 +27,7 @@ with st.sidebar:
     chat_id_map = {c["title"]: c["id"] for c in st.session_state.chats}
 
     selected_chat = option_menu(
-        menu_title="チャット一覧",
+        menu_title="None",
         options=chat_titles,
         icons=["chat"] * len(chat_titles),
     )
