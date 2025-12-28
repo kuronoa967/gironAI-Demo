@@ -1,10 +1,22 @@
 import streamlit as st
 
-with st.sidebar:
-    st.title("ボタン固定の例")
-    st.write("長いコンテンツ..." * 100) # スクロール用
-    
-    # 画面最下部の領域にボタンを配置
-    with st._bottom:
-        if st.button("送信"):
-            st.write("ボタンが押されました")
+# サイドバーに通常のコンテンツを配置
+st.sidebar.title("メニュー")
+st.sidebar.write("ここに通常のリンクや設定を配置します。" * 5)
+
+# 下部に固定したいボタン用のコンテナ
+with st.sidebar.container(key="sidebar_bottom"):
+    if st.button("ログアウト", use_container_width=True):
+        st.write("ログアウトしました")
+
+# CSSでコンテナをサイドバー最下部に固定
+st.html("""
+    <style>
+        /* keyで指定したコンテナを最下部に配置 */
+        .st-key-sidebar_bottom {
+            position: absolute;
+            bottom: 20px;
+            width: 90%;
+        }
+    </style>
+""")
