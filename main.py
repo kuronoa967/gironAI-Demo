@@ -27,6 +27,9 @@ if "chats" not in st.session_state:
 if "current_chat_id" not in st.session_state:
     st.session_state.current_chat_id = None
 
+if "force_select_index" not in st.session_state:
+    st.session_state.force_select_index = None
+
 with st.sidebar:
     # ① 一番上：新規チャット
     if st.button("新規チャット", use_container_width=True):
