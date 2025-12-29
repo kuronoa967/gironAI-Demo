@@ -202,6 +202,10 @@ def show_chat_page():
                 
     prompt = st.chat_input("議題を入力してください…")
 
+    if (prompt):
+        st.session_state["messages"].append({"role": "user", "content": prompt})
+        st.chat_message("user").write(prompt)
+
     if (prompt and st.session_state.user and st.session_state.current_chat_id):
         save_message(
             uid=st.session_state.user["uid"],
