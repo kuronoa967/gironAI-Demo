@@ -182,6 +182,7 @@ with st.sidebar:
             options=chat_titles,
             icons=[None] * len(chat_titles),
             on_change=on_change,
+            key='menu_5',
             manual_select=manual_select,
             styles={
                 "container": {
