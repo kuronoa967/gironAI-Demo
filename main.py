@@ -41,6 +41,9 @@ if "chats" not in st.session_state:
         {"id": "chat3", "title": "AIとの対話"},
     ]
 
+if "messages" not in st.session_state:
+    st.session_state["messages"] = []
+
 if "current_chat_id" not in st.session_state:
     st.session_state.current_chat_id = None
 
