@@ -199,6 +199,7 @@ def show_account_page():
             st.session_state.user = None
             st.session_state.page = "account"
             st.success("ログアウトしました")
+            st.rerun()
 
 def show_chat_page():
     st.write(st.session_state.page)
