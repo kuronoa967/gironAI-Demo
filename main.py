@@ -197,8 +197,8 @@ def show_account_page():
 
         if st.button("ログアウト", type="primary"):
             st.session_state.user = None
+            st.session_state.page = "chat"
             st.success("ログアウトしました")
-            st.rerun()
 
 def show_chat_page():
     st.write(st.session_state.page)
