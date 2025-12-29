@@ -136,12 +136,6 @@ def show_chat_page():
     st.write(st.session_state.user)
     prompt = st.chat_input("議題を入力してください…")
 
-if st.session_state.page == "chat":
-    show_chat_page()
-
-elif st.session_state.page == "account":
-    show_account_page()
-
 with st.sidebar:
     # ① 一番上：新規チャット
     if st.button("新規チャット", use_container_width=True):
@@ -211,3 +205,9 @@ with st.sidebar:
     # ③ 一番下：アカウントボタン
     if st.button("アカウント", use_container_width=True):
         st.session_state.page = "account"
+
+if st.session_state.page == "chat":
+    show_chat_page()
+
+elif st.session_state.page == "account":
+    show_account_page()
