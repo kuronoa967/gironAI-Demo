@@ -3,6 +3,17 @@ from streamlit_option_menu import option_menu
 
 st.set_page_config(layout="wide")
 
+st.markdown(
+    """
+    <style>
+    .st-emotion-cache-1r1cntt {
+        padding-bottom: 0rem !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 if "chats" not in st.session_state:
     st.session_state.chats = [
         {"id": "chat1", "title": "働き方について"},
