@@ -98,13 +98,11 @@ with st.sidebar:
         st.session_state.page = "account"
 
 def show_account_page():
-    st.header("アカウント")
-
     # -------------------------
     # 未ログインの場合
     # -------------------------
     if st.session_state.user is None:
-        st.subheader("ログイン / 新規登録")
+        st.title("ログイン / 新規登録")
 
         email = st.text_input("メールアドレス")
         password = st.text_input("パスワード", type="password")
@@ -114,6 +112,9 @@ def show_account_page():
         # 新規登録
         with col1:
             if st.button("新規登録"):
+                if not email or not password:
+                    st.error("メールアドレスとパスワードを入力してください")
+                    st.stop()
                 url = f"https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={API_KEY}"
                 payload = {
                     "email": email,
@@ -169,7 +170,7 @@ def show_account_page():
     # ログイン済みの場合
     # -------------------------
     else:
-        st.subheader("ログイン中")
+        st.title("アカウント")
 
         st.write("メールアドレス:")
         st.code(st.session_state.user["email"])
