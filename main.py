@@ -72,6 +72,6 @@ with st.sidebar:
 
     # ③ 一番下：アカウントボタン（今は仮）
     if st.button("アカウント", use_container_width=True):
-        st.session_state.page = "account
+        st.session_state.page = "account"
 
 prompt = st.chat_input("議題を入力してください…")
