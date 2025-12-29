@@ -32,7 +32,8 @@ with st.sidebar:
         icons=[None] * len(chat_titles),
         styles={
             "container": {
-                "max-height": "1000px",
+                "max-height": "380px",
+                "height": "380px",
                 "overflow-y": "auto",
             },
             "icon": {
