@@ -56,6 +56,8 @@ with st.sidebar:
         )
         st.session_state.current_chat_id = new_id
         st.session_state.force_select_index = len(st.session_state.chats) - 1
+        st.session_state.page = "chat"
+        st.rerun()
 
     # ② 真ん中：チャット一覧
     chat_titles = [c["title"] for c in st.session_state.chats]
@@ -92,6 +94,8 @@ with st.sidebar:
     
     if selected_chat:
         st.session_state.current_chat_id = chat_id_map[selected_chat]
+        st.session_state.page = "chat"
+        st.rerun()
 
     # ③ 一番下：アカウントボタン
     if st.button("アカウント", use_container_width=True):
