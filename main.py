@@ -132,6 +132,9 @@ def show_account_page():
         # ログイン
         with col2:
             if st.button("ログイン"):
+                if not email or not password:
+                    st.error("メールアドレスとパスワードを入力してください")
+                    st.stop()
                 url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={API_KEY}"
                 payload = {
                     "email": email,
