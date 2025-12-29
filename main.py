@@ -47,6 +47,47 @@ if "current_chat_id" not in st.session_state:
 if "force_select_index" not in st.session_state:
     st.session_state.force_select_index = None
 
+def load_chats_from_firestore(uid):
+    chats_ref = db.collection("users").document(uid).collection("chats")
+    docs = chats_ref.order_by("createdAt").stream()
+
+    chats = []
+    for doc in docs:
+        data = doc.to_dict()
+        chats.append({
+            "id": doc.id,
+            "title": data.get("title", "無題")
+        })
+    return chats
+
+def save_message(uid, chat_id, role, content):
+    messages_ref = (
+        db.collection("users")
+        .document(uid)
+        .collection("chats")
+        .document(chat_id)
+        .collection("messages")
+    )
+
+    messages_ref.add({
+        "role": role,
+        "content": content,
+        "createdAt": firestore.SERVER_TIMESTAMP
+    })
+
+def load_messages(uid, chat_id):
+    messages_ref = (
+        db.collection("users")
+        .document(uid)
+        .collection("chats")
+        .document(chat_id)
+        .collection("messages")
+        .order_by("createdAt")
+    )
+
+    return [doc.to_dict() for doc in messages_ref.stream()]
+
+
 def show_account_page():
     # -------------------------
     # 未ログインの場合
@@ -88,6 +129,8 @@ def show_account_page():
                         "uid": uid,
                         "email": email
                     }
+
+                    st.session_state.chats = load_chats_from_firestore(uid)
                     
                     st.success("登録成功")
                     st.session_state.page = "chat"
@@ -147,9 +190,25 @@ def show_account_page():
             show_chat_page()
 
 def show_chat_page():
-    st.write(st.session_state.page)
-    st.write(st.session_state.user)
+    if st.session_state.user and st.session_state.current_chat_id:
+        messages = load_messages(
+            st.session_state.user["uid"],
+            st.session_state.current_chat_id
+        )
+
+        for msg in messages:
+            with st.chat_message(msg["role"]):
+                st.write(msg["content"])
+                
     prompt = st.chat_input("議題を入力してください…")
+
+    if (prompt and st.session_state.user and st.session_state.current_chat_id):
+        save_message(
+            uid=st.session_state.user["uid"],
+            chat_id=st.session_state.current_chat_id,
+            role="user",
+            content=prompt
+        )
 
 def on_change(key):
     selection = st.session_state[key]
@@ -158,12 +217,34 @@ def on_change(key):
 with st.sidebar:
     # ① 一番上：新規チャット
     if st.button("新規チャット", use_container_width=True):
-        new_id = f"chat{len(st.session_state.chats) + 1}"
-        st.session_state.chats.append(
-            {"id": new_id, "title": "新しいチャット"}
-        )
+
+        if st.session_state.user:
+            uid = st.session_state.user["uid"]
+
+            chat_ref = (
+                db.collection("users")
+                .document(uid)
+                .collection("chats")
+                .document()
+            )
+
+            chat_ref.set({
+                "title": "新しいチャット",
+                "createdAt": firestore.SERVER_TIMESTAMP
+            })
+
+            new_id = chat_ref.id
+
+        else:
+            # 未ログイン時（Firestoreに保存しない）
+            new_id = f"chat{len(st.session_state.chats) + 1}"
+
+        st.session_state.chats.append({
+            "id": new_id,
+            "title": "新しいチャット"
+        })
+
         st.session_state.current_chat_id = new_id
-        st.session_state.force_select_index = len(st.session_state.chats) - 1
         st.session_state.page = "chat"
         st.rerun()
 
