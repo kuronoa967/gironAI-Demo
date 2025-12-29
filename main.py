@@ -129,7 +129,7 @@ def show_account_page():
             st.session_state.user = None
             st.session_state.page = "chat"
             st.success("ログアウトしました")
-            st.rerun()
+            show_chat_page()
 
 def show_chat_page():
     st.write(st.session_state.page)
@@ -177,6 +177,7 @@ with st.sidebar:
             menu_title=None,
             options=chat_titles,
             icons=[None] * len(chat_titles),
+            on_change=on_change,
             manual_select=manual_select,
             styles={
                 "container": {
@@ -197,14 +198,14 @@ with st.sidebar:
 
         if st.session_state.force_select_index is not None:
             st.session_state.force_select_index = None
-        
-        if selected_chat:
-            st.session_state.current_chat_id = chat_id_map[selected_chat]
-            st.session_state.page = "chat"
 
     # ③ 一番下：アカウントボタン
     if st.button("アカウント", use_container_width=True):
         st.session_state.page = "account"
+
+def on_change(key):
+    selection = st.session_state[key]
+    st.write(f"Selection changed to {selection}")
 
 if st.session_state.page == "chat":
     show_chat_page()
