@@ -76,7 +76,22 @@ def show_account_page():
                 data = r.json()
 
                 if "localId" in data:
+                    uid = data["localId"]
+
+                    # Firestore に保存（初回 or 上書き）
+                    db.collection("users").document(uid).set({
+                        "email": email
+                    }, merge=True)
+
+                    # ★ ログイン状態を保存
+                    st.session_state.user = {
+                        "uid": uid,
+                        "email": email
+                    }
+                    
                     st.success("登録成功")
+                    st.session_state.page = "chat"
+                    st.rerun()
                 else:
                     st.error(data)
 
@@ -182,7 +197,7 @@ with st.sidebar:
             options=chat_titles,
             icons=[None] * len(chat_titles),
             on_change=on_change,
-            key='menu_5',
+            key='chat_history',
             manual_select=manual_select,
             styles={
                 "container": {
