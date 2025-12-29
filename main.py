@@ -44,11 +44,15 @@ with st.sidebar:
     chat_titles = [c["title"] for c in st.session_state.chats]
     chat_id_map = {c["title"]: c["id"] for c in st.session_state.chats}
 
+    manual_select = None
+    if st.session_state.force_select_index is not None:
+        manual_select = st.session_state.force_select_index
+    
     selected_chat = option_menu(
         menu_title=None,
         options=chat_titles,
         icons=[None] * len(chat_titles),
-        manual_select=st.session_state.force_select_index,
+        manual_select=manual_select,
         styles={
             "container": {
                 "max-height": "400px",
@@ -65,10 +69,12 @@ with st.sidebar:
             },
         },
     )
+
+    if st.session_state.force_select_index is not None:
+        st.session_state.force_select_index = None
     
     if selected_chat:
         st.session_state.current_chat_id = chat_id_map[selected_chat]
-        st.session_state.force_select_index = None
 
     # ③ 一番下：アカウントボタン（今は仮）
     if st.button("アカウント", use_container_width=True):
