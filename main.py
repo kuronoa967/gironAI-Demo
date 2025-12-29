@@ -97,12 +97,6 @@ with st.sidebar:
     if st.button("アカウント", use_container_width=True):
         st.session_state.page = "account"
 
-if st.session_state.page == "chat":
-    show_chat_page()
-
-elif st.session_state.page == "account":
-    show_account_page()
-
 def show_account_page():
     st.header("アカウント")
 
@@ -183,4 +177,11 @@ def show_account_page():
             st.success("ログアウトしました")
             st.rerun()
 
-prompt = st.chat_input("議題を入力してください…")
+def show_chat_page():
+    prompt = st.chat_input("議題を入力してください…")
+
+if st.session_state.page == "chat":
+    show_chat_page()
+
+elif st.session_state.page == "account":
+    show_account_page()
