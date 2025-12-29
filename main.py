@@ -72,12 +72,6 @@ with st.sidebar:
 
     # ③ 一番下：アカウントボタン（今は仮）
     if st.button("アカウント", use_container_width=True):
-        st.session_state.page = "account"
+        st.session_state.page = "account
 
-st.header("メインチャット画面")
-
-if st.session_state.current_chat_id is None:
-    st.info("左のサイドバーからチャットを選択してください")
-else:
-    st.write("選択中のチャットID:")
-    st.code(st.session_state.current_chat_id)
+prompt = st.chat_input("議題を入力してください…")
