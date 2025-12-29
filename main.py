@@ -183,7 +183,4 @@ def show_account_page():
             st.success("ログアウトしました")
             st.rerun()
 
-
-＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
-
 prompt = st.chat_input("議題を入力してください…")
