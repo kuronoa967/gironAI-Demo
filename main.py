@@ -9,6 +9,9 @@ st.markdown(
     .st-emotion-cache-1r1cntt {
         padding-bottom: 0rem !important;
     }
+    .st-emotion-cache-10p9htt {
+        margin-bottom: 0rem !important;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -51,6 +54,9 @@ with st.sidebar:
                 "display": "none",
                 "margin-right": "0",
                 "width": "0",
+            },
+            "nav": {
+                "font-size": "14px",
             },
         },
     )
