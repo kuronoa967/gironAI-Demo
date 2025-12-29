@@ -112,7 +112,6 @@ with st.sidebar:
         if selected_chat:
             st.session_state.current_chat_id = chat_id_map[selected_chat]
             st.session_state.page = "chat"
-            st.rerun()
 
     # ③ 一番下：アカウントボタン
     if st.button("アカウント", use_container_width=True):
