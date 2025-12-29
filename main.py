@@ -201,6 +201,8 @@ def show_account_page():
             st.rerun()
 
 def show_chat_page():
+    st.write(st.session_state.page)
+    st.write(st.session_state.user)
     prompt = st.chat_input("議題を入力してください…")
 
 if st.session_state.page == "chat":
