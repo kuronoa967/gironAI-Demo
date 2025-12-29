@@ -1,7 +1,8 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
-
-st.set_page_config(layout="wide")
+import requests
+import firebase_admin
+from firebase_admin import credentials, firestore
 
 st.markdown(
     """
@@ -16,6 +17,22 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+if not firebase_admin._apps:
+    cred = credentials.Certificate(dict(st.secrets["firebase_admin"]))
+    firebase_admin.initialize_app(cred)
+
+db = firestore.client()
+
+API_KEY = st.secrets["firebase_auth"]["api_key"]
+
+st.set_page_config(layout="wide")
+
+if "page" not in st.session_state:
+    st.session_state.page = "chat"   # 通常はチャット画面
+
+if "user" not in st.session_state:
+    st.session_state.user = None     # None = 未ログイン
 
 if "chats" not in st.session_state:
     st.session_state.chats = [
@@ -76,8 +93,97 @@ with st.sidebar:
     if selected_chat:
         st.session_state.current_chat_id = chat_id_map[selected_chat]
 
-    # ③ 一番下：アカウントボタン（今は仮）
+    # ③ 一番下：アカウントボタン
     if st.button("アカウント", use_container_width=True):
         st.session_state.page = "account"
+
+if st.session_state.page == "chat":
+    show_chat_page()
+
+elif st.session_state.page == "account":
+    show_account_page()
+
+def show_account_page():
+    st.header("アカウント")
+
+    # -------------------------
+    # 未ログインの場合
+    # -------------------------
+    if st.session_state.user is None:
+        st.subheader("ログイン / 新規登録")
+
+        email = st.text_input("メールアドレス")
+        password = st.text_input("パスワード", type="password")
+
+        col1, col2 = st.columns(2)
+
+        # 新規登録
+        with col1:
+            if st.button("新規登録"):
+                url = f"https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={API_KEY}"
+                payload = {
+                    "email": email,
+                    "password": password,
+                    "returnSecureToken": True
+                }
+
+                r = requests.post(url, json=payload)
+                data = r.json()
+
+                if "localId" in data:
+                    st.success("登録成功")
+                else:
+                    st.error(data)
+
+        # ログイン
+        with col2:
+            if st.button("ログイン"):
+                url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={API_KEY}"
+                payload = {
+                    "email": email,
+                    "password": password,
+                    "returnSecureToken": True
+                }
+
+                r = requests.post(url, json=payload)
+                data = r.json()
+
+                if "localId" in data:
+                    uid = data["localId"]
+
+                    # Firestore に保存（初回 or 上書き）
+                    db.collection("users").document(uid).set({
+                        "email": email
+                    }, merge=True)
+
+                    # ★ ログイン状態を保存
+                    st.session_state.user = {
+                        "uid": uid,
+                        "email": email
+                    }
+
+                    st.success("ログイン成功")
+                    st.session_state.page = "chat"
+                    st.rerun()
+                else:
+                    st.error(data)
+
+    # -------------------------
+    # ログイン済みの場合
+    # -------------------------
+    else:
+        st.subheader("ログイン中")
+
+        st.write("メールアドレス:")
+        st.code(st.session_state.user["email"])
+
+        if st.button("ログアウト", type="primary"):
+            st.session_state.user = None
+            st.session_state.page = "chat"
+            st.success("ログアウトしました")
+            st.rerun()
+
+
+＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 
 prompt = st.chat_input("議題を入力してください…")
