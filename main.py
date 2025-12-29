@@ -47,76 +47,6 @@ if "current_chat_id" not in st.session_state:
 if "force_select_index" not in st.session_state:
     st.session_state.force_select_index = None
 
-with st.sidebar:
-    # ① 一番上：新規チャット
-    if st.button("新規チャット", use_container_width=True):
-        new_id = f"chat{len(st.session_state.chats) + 1}"
-        st.session_state.chats.append(
-            {"id": new_id, "title": "新しいチャット"}
-        )
-        st.session_state.current_chat_id = new_id
-        st.session_state.force_select_index = len(st.session_state.chats) - 1
-        st.session_state.page = "chat"
-        st.rerun()
-
-    # ② 真ん中：チャット一覧
-    if st.session_state.user is None:
-        # 未ログイン時
-        st.markdown(
-            """
-            <div style="
-                padding: 1rem;
-                color: #888;
-                font-size: 0.9rem;
-                text-align: center;
-            ">
-                ログインすると<br>
-                チャット履歴が保存されます
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-    else:
-        chat_titles = [c["title"] for c in st.session_state.chats]
-        chat_id_map = {c["title"]: c["id"] for c in st.session_state.chats}
-
-        manual_select = None
-        if st.session_state.force_select_index is not None:
-            manual_select = st.session_state.force_select_index
-        
-        selected_chat = option_menu(
-            menu_title=None,
-            options=chat_titles,
-            icons=[None] * len(chat_titles),
-            manual_select=manual_select,
-            styles={
-                "container": {
-                    "max-height": "400px",
-                    "height": "400px",
-                    "overflow-y": "auto",
-                },
-                "icon": {
-                    "display": "none",
-                    "margin-right": "0",
-                    "width": "0",
-                },
-                "nav": {
-                    "font-size": "14px",
-                },
-            },
-        )
-
-        if st.session_state.force_select_index is not None:
-            st.session_state.force_select_index = None
-        
-        if selected_chat:
-            st.session_state.current_chat_id = chat_id_map[selected_chat]
-            st.session_state.page = "chat"
-
-    # ③ 一番下：アカウントボタン
-    if st.button("アカウント", use_container_width=True):
-        st.session_state.page = "account"
-
 def show_account_page():
     # -------------------------
     # 未ログインの場合
@@ -205,6 +135,76 @@ def show_chat_page():
     st.write(st.session_state.page)
     st.write(st.session_state.user)
     prompt = st.chat_input("議題を入力してください…")
+
+with st.sidebar:
+    # ① 一番上：新規チャット
+    if st.button("新規チャット", use_container_width=True):
+        new_id = f"chat{len(st.session_state.chats) + 1}"
+        st.session_state.chats.append(
+            {"id": new_id, "title": "新しいチャット"}
+        )
+        st.session_state.current_chat_id = new_id
+        st.session_state.force_select_index = len(st.session_state.chats) - 1
+        st.session_state.page = "chat"
+        st.rerun()
+
+    # ② 真ん中：チャット一覧
+    if st.session_state.user is None:
+        # 未ログイン時
+        st.markdown(
+            """
+            <div style="
+                padding: 1rem;
+                color: #888;
+                font-size: 0.9rem;
+                text-align: center;
+            ">
+                ログインすると<br>
+                チャット履歴が保存されます
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    else:
+        chat_titles = [c["title"] for c in st.session_state.chats]
+        chat_id_map = {c["title"]: c["id"] for c in st.session_state.chats}
+
+        manual_select = None
+        if st.session_state.force_select_index is not None:
+            manual_select = st.session_state.force_select_index
+        
+        selected_chat = option_menu(
+            menu_title=None,
+            options=chat_titles,
+            icons=[None] * len(chat_titles),
+            manual_select=manual_select,
+            styles={
+                "container": {
+                    "max-height": "400px",
+                    "height": "400px",
+                    "overflow-y": "auto",
+                },
+                "icon": {
+                    "display": "none",
+                    "margin-right": "0",
+                    "width": "0",
+                },
+                "nav": {
+                    "font-size": "14px",
+                },
+            },
+        )
+
+        if st.session_state.force_select_index is not None:
+            st.session_state.force_select_index = None
+        
+        if selected_chat:
+            st.session_state.current_chat_id = chat_id_map[selected_chat]
+            st.session_state.page = "chat"
+
+    # ③ 一番下：アカウントボタン
+    if st.button("アカウント", use_container_width=True):
+        st.session_state.page = "account"
 
 if st.session_state.page == "chat":
     show_chat_page()
