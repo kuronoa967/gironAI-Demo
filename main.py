@@ -301,7 +301,8 @@ def show_chat_page():
                 st.session_state.topic = prompt
                 system_prompt = f"あなたは論理的な議論AIです。ユーザーの主張に対して、事実や根拠をもとに短い文章で反論してください。議論は次のテーマに限定してください：{st.session_state['topic']}"
                 st.session_state.messages.append({"role": "system", "content": system_prompt})
-                
+
+            st.chat_message("user").write(prompt)
             st.session_state["messages"].append({"role": "user", "content": prompt})
             with st.spinner("反論を生成中..."):
                 completion = client.chat.completions.create(
