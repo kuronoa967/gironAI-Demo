@@ -290,7 +290,7 @@ with st.sidebar:
         chat_id_map = {c["title"]: c["id"] for c in st.session_state.chats}
 
         manual_select = None
-        if st.session_state.force_select_index is not Noneand st.session_state.force_select_index < len(chat_titles):
+        if st.session_state.force_select_index is not None and st.session_state.force_select_index < len(chat_titles):
             manual_select = st.session_state.force_select_index
         if not chat_titles:
             st.markdown(
