@@ -66,10 +66,11 @@ def load_chats(uid):
         chats.append({
             "id": doc.id,
             "title": data.get("title", "無題")
+            "topic": data.get("topic")
         })
     return chats
     
-def create_chat(uid, title):
+def create_chat(uid, title, topic):
     chat_ref = (
         db.collection("users")
         .document(uid)
@@ -79,6 +80,7 @@ def create_chat(uid, title):
 
     chat_ref.set({
         "title": title,
+        "topic": topic
         "createdAt": firestore.SERVER_TIMESTAMP
     })
     return chat_ref.id
@@ -122,15 +124,13 @@ def load_messages(uid, chat_id):
 
 def built_AI_message(uid, chat_id, prompt):
     messages = []
-    if st.session_state.topic is None:
-        st.session_state.topic = prompt
     system_prompt = f"あなたは論理的な議論AIです。ユーザーの主張に対して、事実や根拠をもとに短い文章で反論してください。議論は次のテーマに限定してください：{st.session_state['topic']}"
     messages.append({"role": "system", "content": system_prompt})
     past_messages = load_messages(uid, chat_id)
     for m in past_messages:
         if m["role"] in ["user", "assistant"]:
             messages.append(m)
-    messages.append({"role": "user", "content": user_prompt})
+    messages.append({"role": "user", "content": prompt})
     return messages
 
 def show_account_page():
@@ -260,9 +260,10 @@ def show_chat_page():
     if prompt:
         if st.session_state.user and st.session_state.new_chat:
             uid = st.session_state.user["uid"]
-            new_chat_id = create_chat(uid, title=prompt)
+            new_chat_id = create_chat(uid, title=prompt, topic=prompt)
             st.session_state.current_chat_id = new_chat_id
             st.session_state.new_chat = False
+            st.session_state.topic = prompt
             save_message(uid, new_chat_id, "user", prompt)
             
             ai_message = built_AI_message(uid, new_chat_id, prompt)
@@ -284,7 +285,7 @@ def show_chat_page():
             chat_id = st.session_state.current_chat_id
             save_message(uid, chat_id, role="user", content=prompt)
             
-            ai_message = built_AI_message(uid, new_chat_id, prompt)
+            ai_message = built_AI_message(uid, chat_id, prompt)
             with st.spinner("反論を生成中..."):
                 completion = client.chat.completions.create(
                     model = "meta-llama/Llama-3.1-8B-Instruct",
@@ -293,7 +294,7 @@ def show_chat_page():
                     temperature = 0.7,
                 )
             answer = completion.choices[0].message.content
-            save_message(uid, new_chat_id, "assistant", answer)
+            save_message(uid, chat_id, "assistant", answer)
             
             st.rerun()
         else :
@@ -322,7 +323,8 @@ def on_change(key):
     selected_chat_id = chat_id_map[selected_title]
 
     st.session_state.current_chat_id = selected_chat_id
-    st.session_state.is_new_chat = False
+    st.session_state.topic = selected_chat.get("topic")
+    st.session_state.new_chat = False
     st.session_state.page = "chat"
 
 with st.sidebar:
