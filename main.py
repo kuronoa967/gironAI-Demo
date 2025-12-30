@@ -65,7 +65,7 @@ def load_chats(uid):
         data = doc.to_dict()
         chats.append({
             "id": doc.id,
-            "title": data.get("title", "無題")
+            "title": data.get("title", "無題"),
             "topic": data.get("topic")
         })
     return chats
@@ -80,7 +80,7 @@ def create_chat(uid, title, topic):
 
     chat_ref.set({
         "title": title,
-        "topic": topic
+        "topic": topic,
         "createdAt": firestore.SERVER_TIMESTAMP
     })
     return chat_ref.id
