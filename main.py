@@ -35,14 +35,10 @@ if "user" not in st.session_state:
     st.session_state.user = None     # None = 未ログイン
 
 if "chats" not in st.session_state:
-    st.session_state.chats = [
-        {"id": "chat1", "title": "働き方について"},
-        {"id": "chat2", "title": "将来の不安"},
-        {"id": "chat3", "title": "AIとの対話"},
-    ]
+    st.session_state.chats = []
 
 if "messages" not in st.session_state:
-    st.session_state["messages"] = []
+    st.session_state.messages = []
 
 if "current_chat_id" not in st.session_state:
     st.session_state.current_chat_id = None
@@ -88,7 +84,17 @@ def load_messages(uid, chat_id):
         .order_by("createdAt")
     )
 
-    return [doc.to_dict() for doc in messages_ref.stream()]
+    docs = messages_ref.stream()
+
+    messages = []
+    for doc in docs:
+        data = doc.to_dict()
+        messages.append({
+            "role": data["role"],
+            "content": data["content"],
+        })
+
+    return messages
 
 
 def show_account_page():
@@ -218,8 +224,18 @@ def show_chat_page():
         )
 
 def on_change(key):
-    selection = st.session_state[key]
-    st.write(f"Selection changed to {selection}")
+    selected_title = st.session_state[key]
+
+    chat_id_map = {c["title"]: c["id"] for c in st.session_state.chats}
+    selected_chat_id = chat_id_map[selected_title]
+
+    st.session_state.current_chat_id = selected_chat_id
+
+    st.session_state.page = "chat"
+
+    uid = st.session_state.user["uid"]
+    st.session_state.messages = load_messages(uid, chat_id)
+    
 
 with st.sidebar:
     # ① 一番上：新規チャット
