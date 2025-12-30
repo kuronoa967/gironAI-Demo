@@ -316,30 +316,29 @@ with st.sidebar:
                 unsafe_allow_html=True
             )
         else:
-            if not st.session_state.new_chat:
-                selected_chat = option_menu(
-                    menu_title=None,
-                    options=chat_titles,
-                    icons=[None] * len(chat_titles),
-                    on_change=on_change,
-                    key='chat_history',
-                    manual_select=manual_select,
-                    styles={
-                        "container": {
-                            "max-height": "400px",
-                            "height": "400px",
-                            "overflow-y": "auto",
-                        },
-                        "icon": {
-                            "display": "none",
-                            "margin-right": "0",
-                            "width": "0",
-                        },
-                        "nav": {
-                            "font-size": "14px",
-                        },
+            selected_chat = option_menu(
+                menu_title=None,
+                options=chat_titles,
+                icons=[None] * len(chat_titles),
+                on_change=on_change,
+                key='chat_history',
+                manual_select=manual_select,
+                styles={
+                    "container": {
+                        "max-height": "400px",
+                        "height": "400px",
+                        "overflow-y": "auto",
                     },
-                )
+                    "icon": {
+                        "display": "none",
+                        "margin-right": "0",
+                        "width": "0",
+                    },
+                    "nav": {
+                        "font-size": "14px",
+                    },
+                },
+            )
 
         if st.session_state.force_select_index is not None:
             st.session_state.force_select_index = None
