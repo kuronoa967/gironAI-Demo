@@ -290,32 +290,47 @@ with st.sidebar:
         chat_id_map = {c["title"]: c["id"] for c in st.session_state.chats}
 
         manual_select = None
-        if st.session_state.force_select_index is not None:
+        if st.session_state.force_select_index is not Noneand st.session_state.force_select_index < len(chat_titles):
             manual_select = st.session_state.force_select_index
-        
-        selected_chat = option_menu(
-            menu_title=None,
-            options=chat_titles,
-            icons=[None] * len(chat_titles),
-            on_change=on_change,
-            key='chat_history',
-            manual_select=manual_select,
-            styles={
-                "container": {
-                    "max-height": "400px",
-                    "height": "400px",
-                    "overflow-y": "auto",
+        if not chat_titles:
+            st.markdown(
+                """
+                <div style="
+                    padding: 11.5rem 1rem;
+                    color: #888;
+                    font-size: 0.9rem;
+                    text-align: center;
+                ">
+                    まだチャットが<br>
+                    ありません
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        else:
+            selected_chat = option_menu(
+                menu_title=None,
+                options=chat_titles,
+                icons=[None] * len(chat_titles),
+                on_change=on_change,
+                key='chat_history',
+                manual_select=manual_select,
+                styles={
+                    "container": {
+                        "max-height": "400px",
+                        "height": "400px",
+                        "overflow-y": "auto",
+                    },
+                    "icon": {
+                        "display": "none",
+                        "margin-right": "0",
+                        "width": "0",
+                    },
+                    "nav": {
+                        "font-size": "14px",
+                    },
                 },
-                "icon": {
-                    "display": "none",
-                    "margin-right": "0",
-                    "width": "0",
-                },
-                "nav": {
-                    "font-size": "14px",
-                },
-            },
-        )
+            )
 
         if st.session_state.force_select_index is not None:
             st.session_state.force_select_index = None
