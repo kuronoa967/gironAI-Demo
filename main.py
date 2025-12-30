@@ -194,6 +194,8 @@ def show_account_page():
                     st.session_state.chats = load_chats(uid)
 
                     st.success("ログイン成功")
+                    st.session_state.messages = []
+                    st.session_state.current_chat_id = None
                     st.session_state.page = "chat"
                     st.rerun()
                 else:
