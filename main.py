@@ -40,6 +40,9 @@ if "chats" not in st.session_state:
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+if "new_chat" not in st.session_state:
+    st.session_state.new_chat = False
+
 if "current_chat_id" not in st.session_state:
     st.session_state.current_chat_id = None
 
@@ -232,10 +235,11 @@ def show_chat_page():
     prompt = st.chat_input("議題を入力してください…")
 
     if prompt:
-        if st.session_state.user and st.session_state.current_chat_id is None:
+        if st.session_state.user and st.session_state.new_chat:
             uid = st.session_state.user["uid"]
             new_chat_id = create_chat(uid, title=prompt)
             st.session_state.current_chat_id = new_chat_id
+            st.session_state.new_chat = False
             st.session_state.chats = load_chats(uid)
             st.session_state.force_select_index = len(st.session_state.chats) - 1
             save_message(uid, new_chat_id, "user", prompt)
@@ -259,7 +263,7 @@ def on_change(key):
     selected_chat_id = chat_id_map[selected_title]
 
     st.session_state.current_chat_id = selected_chat_id
-
+    st.session_state.is_new_chat = False
     st.session_state.page = "chat"
 
 with st.sidebar:
@@ -269,6 +273,7 @@ with st.sidebar:
         st.session_state.messages = []
         st.session_state.force_select_index = len(st.session_state.chats)
         st.session_state.page = "chat"
+        st.session_state.new_chat = True
         st.rerun()
 
     # ② 真ん中：チャット一覧
@@ -311,29 +316,30 @@ with st.sidebar:
                 unsafe_allow_html=True
             )
         else:
-            selected_chat = option_menu(
-                menu_title=None,
-                options=chat_titles,
-                icons=[None] * len(chat_titles),
-                on_change=on_change,
-                key='chat_history',
-                manual_select=manual_select,
-                styles={
-                    "container": {
-                        "max-height": "400px",
-                        "height": "400px",
-                        "overflow-y": "auto",
+            if not st.session_state.new_chat:
+                selected_chat = option_menu(
+                    menu_title=None,
+                    options=chat_titles,
+                    icons=[None] * len(chat_titles),
+                    on_change=on_change,
+                    key='chat_history',
+                    manual_select=manual_select,
+                    styles={
+                        "container": {
+                            "max-height": "400px",
+                            "height": "400px",
+                            "overflow-y": "auto",
+                        },
+                        "icon": {
+                            "display": "none",
+                            "margin-right": "0",
+                            "width": "0",
+                        },
+                        "nav": {
+                            "font-size": "14px",
+                        },
                     },
-                    "icon": {
-                        "display": "none",
-                        "margin-right": "0",
-                        "width": "0",
-                    },
-                    "nav": {
-                        "font-size": "14px",
-                    },
-                },
-            )
+                )
 
         if st.session_state.force_select_index is not None:
             st.session_state.force_select_index = None
