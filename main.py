@@ -46,7 +46,7 @@ if "current_chat_id" not in st.session_state:
 if "force_select_index" not in st.session_state:
     st.session_state.force_select_index = None
 
-def load_chats_from_firestore(uid):
+def load_chats(uid):
     chats_ref = db.collection("users").document(uid).collection("chats")
     docs = chats_ref.order_by("createdAt").stream()
 
@@ -58,7 +58,21 @@ def load_chats_from_firestore(uid):
             "title": data.get("title", "無題")
         })
     return chats
+    
+def create_chat(uid, title):
+    chat_ref = (
+        db.collection("users")
+        .document(uid)
+        .collection("chats")
+        .document()
+    )
 
+    chat_ref.set({
+        "title": title,
+        "createdAt": firestore.SERVER_TIMESTAMP
+    })
+    return chat_ref.id
+    
 def save_message(uid, chat_id, role, content):
     messages_ref = (
         db.collection("users")
@@ -139,7 +153,7 @@ def show_account_page():
                         "email": email
                     }
 
-                    st.session_state.chats = load_chats_from_firestore(uid)
+                    st.session_state.chats = load_chats(uid)
                     
                     st.success("登録成功")
                     st.session_state.page = "chat"
@@ -177,6 +191,8 @@ def show_account_page():
                         "email": email
                     }
 
+                    st.session_state.chats = load_chats(uid)
+
                     st.success("ログイン成功")
                     st.session_state.page = "chat"
                     st.rerun()
@@ -196,7 +212,7 @@ def show_account_page():
             st.session_state.user = None
             st.session_state.page = "chat"
             st.success("ログアウトしました")
-            show_chat_page()
+            st.rerun()
 
 def show_chat_page():
     if st.session_state.user and st.session_state.current_chat_id:
@@ -213,17 +229,25 @@ def show_chat_page():
                 
     prompt = st.chat_input("議題を入力してください…")
 
-    if (prompt):
-        st.session_state["messages"].append({"role": "user", "content": prompt})
-        st.chat_message("user").write(prompt)
-
-    if (prompt and st.session_state.user and st.session_state.current_chat_id):
-        save_message(
-            uid=st.session_state.user["uid"],
-            chat_id=st.session_state.current_chat_id,
-            role="user",
-            content=prompt
-        )
+    if prompt:
+        if st.session_state.user and st.session_state.current_chat_id is None:
+            uid = st.session_state.user["uid"]
+            new_chat_id = create_chat(uid, title=prompt)
+            st.session_state.current_chat_id = new_chat_id
+            st.session_state.chats = load_chats(uid)
+            st.session_state.force_select_index = len(st.session_state.chats) - 1
+            save_message(uid, new_chat_id, "user", prompt)
+            st.rerun()
+        elif st.session_state.user:
+            save_message(
+                uid=st.session_state.user["uid"],
+                chat_id=st.session_state.current_chat_id,
+                role="user",
+                content=prompt
+            )
+        else :
+            st.session_state["messages"].append({"role": "user", "content": prompt})
+            st.chat_message("user").write(prompt)
 
 def on_change(key):
     selected_title = st.session_state[key]
@@ -235,41 +259,12 @@ def on_change(key):
 
     st.session_state.page = "chat"
 
-    uid = st.session_state.user["uid"]
-    st.session_state.messages = load_messages(uid, chat_id)
-    
-
 with st.sidebar:
     # ① 一番上：新規チャット
     if st.button("新規チャット", use_container_width=True):
-
-        if st.session_state.user:
-            uid = st.session_state.user["uid"]
-
-            chat_ref = (
-                db.collection("users")
-                .document(uid)
-                .collection("chats")
-                .document()
-            )
-
-            chat_ref.set({
-                "title": "新しいチャット",
-                "createdAt": firestore.SERVER_TIMESTAMP
-            })
-
-            new_id = chat_ref.id
-
-        else:
-            # 未ログイン時（Firestoreに保存しない）
-            new_id = f"chat{len(st.session_state.chats) + 1}"
-
-        st.session_state.chats.append({
-            "id": new_id,
-            "title": "新しいチャット"
-        })
-
-        st.session_state.current_chat_id = new_id
+        st.session_state.current_chat_id = None
+        st.session_state.messages = []
+        st.session_state.force_select_index = len(st.session_state.chats)
         st.session_state.page = "chat"
         st.rerun()
 
