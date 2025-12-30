@@ -19,6 +19,9 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+HF_TOKEN = st.secrets["HF_TOKEN"]
+client = InferenceClient(api_key=HF_TOKEN)
+
 if not firebase_admin._apps:
     cred = credentials.Certificate(dict(st.secrets["firebase_admin"]))
     firebase_admin.initialize_app(cred)
