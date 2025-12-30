@@ -206,8 +206,10 @@ def show_chat_page():
         )
 
         for msg in messages:
-            with st.chat_message(msg["role"]):
-                st.write(msg["content"])
+            st.chat_message(msg["role"]).write(msg["content"])
+    else :
+        for msg in st.session_state.messages:
+            st.chat_message(msg["role"]).write(msg["content"])
                 
     prompt = st.chat_input("議題を入力してください…")
 
@@ -277,7 +279,7 @@ with st.sidebar:
         st.markdown(
             """
             <div style="
-                padding: 1rem;
+                padding: 11.5rem 1rem;
                 color: #888;
                 font-size: 0.9rem;
                 text-align: center;
