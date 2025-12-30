@@ -2,3 +2,4 @@ streamlit
 firebase-admin
 requests
 streamlit-option-menu
+huggingface-hub
