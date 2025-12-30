@@ -251,6 +251,8 @@ def show_chat_page():
             st.chat_message(msg["role"]).write(msg["content"])
     else :
         for msg in st.session_state.messages:
+            if msg["role"] == "system":
+                continue
             st.chat_message(msg["role"]).write(msg["content"])
                 
     prompt = st.chat_input("議題を入力してください…")
