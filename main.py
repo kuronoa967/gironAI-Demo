@@ -245,10 +245,11 @@ def show_chat_page():
                 role="user",
                 content=prompt
             )
+            st.rerun()
         else :
             st.session_state["messages"].append({"role": "user", "content": prompt})
             st.chat_message("user").write(prompt)
-
+            
 def on_change(key):
     selected_title = st.session_state[key]
 
